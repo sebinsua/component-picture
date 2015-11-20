@@ -15,14 +15,16 @@ export default class Picture extends React.Component {
     super(...arguments);
     this.changeImageByWidth = this.changeImageByWidth.bind(this);
     const dppx = getClosestDppx(sources);
-    const sourcesOfDppx = sources.filter((source) => source.dppx === dppx);
-    const smallPortraitSource = sourcesOfDppx.reduce((previousSource, currentSource) => {
+    const smallPortraitSource = sources.reduce((previousSource, currentSource) => {
+      if (currentSource.dppx !== dppx) {
+        return previousSource;
+      }
       const portraitImageRatioCutoff = 2;
       const isLessWide = currentSource.width < previousSource.width;
       const currentImageRatio = Math.abs(currentSource.width / currentSource.height);
       const isPortrait = currentImageRatio < portraitImageRatioCutoff;
       return isLessWide && isPortrait ? currentSource : previousSource;
-    }, sourcesOfDppx[0] || {});
+    }, sources[0] || {});
     this.state = {
       ...smallPortraitSource,
     };
